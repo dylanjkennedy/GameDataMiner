@@ -8,10 +8,10 @@ import sys
 def mainloop():
     args = sys.argv
     key = args[1]
-    opponents = ["IAUN", "ILUN", "INPU", "ILNW", "MNUN", "WIUN", "NEUN"]
-
+    
     params = get_params(key)
-    games = get_games(opponents, params)
+    teams = get_teams("Big Ten", params)
+    games = get_games(teams, params)
     output = game_level_data(games, params)
 
     with open('game_level_results.csv', 'w', newline ='') as f:
@@ -26,6 +26,16 @@ def get_params (key):
     jwt = r.json()['jwt']
     params = {'Authorization':'Bearer ' + jwt}
     return params
+
+def get_teams (name, params):
+    teams = []
+    r = requests.get('https://api.profootballfocus.com/v1/ncaa/2019/teams', headers = params)
+    for team in r.json()['teams']:
+        for group in team['groups']:
+            if group['name'] == name:
+                teams.append(team['gsis_abbreviation'])
+
+    return teams
 
 # For B1G opponents, return all game ids in which they played in 2019
 # And report the id first, then winning team, then the losing team
