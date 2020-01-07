@@ -82,7 +82,7 @@ def game_level_data (games, params):
 def count_sacks(plays, winner, loser):
     sacks = [0, 0]
     for play in plays:
-        if play['pass_result'] == 'SACK':
+        if play['sack'] != None:
             if play['defense'] == winner:
                 sacks[0] = sacks[0] + 1
             else:
