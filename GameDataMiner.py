@@ -59,7 +59,7 @@ def get_games (opponents, params):
 # For a list of games, return game level data for each
 # listof str, str -> {listof str}
 def game_level_data (games, params):
-    fields = ["Sacks", "Rush Yards", "Yards per Carry", "Explosive Plays"]
+    fields = ["Sacks", "Rushing Yards", "Yards per Carry", "Explosive Plays"]
     header = ['Game ID', 'Winner', 'Loser']
     for field in fields:
         new_cols = ['Winner ' + field,
@@ -97,11 +97,11 @@ def count_sacks(plays, winner, loser):
 def count_rush_yards(plays, winner, loser):
     rush_yards = [0, 0]
     for play in plays:
-        if play['pff_RUNPASS'] == 'R':
+        if play['run_pass'] == 'R':
             if play['offense'] == winner:
-                rush_yards[0] = rush_yards[0] + play['pff_GAINLOSS']
+                rush_yards[0] = rush_yards[0] + play['gain_loss_net']
             else:
-                rush_yards[1] = rush_yards[1] + play['pff_GAINLOSS']
+                rush_yards[1] = rush_yards[1] + play['gain_loss_net']
     return get_differentials(rush_yards)
 
 # For a list of plays and the winning team and losing team
@@ -110,14 +110,14 @@ def get_ypc(plays, winner, loser):
     carries = [0, 0]
     yards = [0, 0]
     for play in plays:
-        if play['pff_RUNPASS'] == 'R':
+        if play['run_pass'] == 'R':
             if play['offense'] == winner:
                 carries[0] = carries[0] + 1
-                yards[0] = yards[0] + play['pff_GAINLOSS']
+                yards[0] = yards[0] + play['gain_loss_net']
             else:
                 carries[1] = carries[1] + 1
-                yards[1] = yards[1] + play['pff_GAINLOSS']
-    ypc = [yards[0]/carries[0], yards[1]/carries[1]]
+                yards[1] = yards[1] + play['gain_loss_net']
+    ypc = [round(yards[0]/carries[0], 2), round(yards[1]/carries[1], 2)]
     return get_differentials(ypc)
 
 # For a list of plays and the winning team and losing team
@@ -127,12 +127,12 @@ def count_explosive_plays(plays, winner, loser):
     explosive_pass = 20
     explosive_plays = [0, 0]
     for play in plays:
-        if play['pff_RUNPASS'] == 'R' and play['pff_GAINLOSS'] >= explosive_run:
+        if play['run_pass'] == 'R' and play['gain_loss_net'] >= explosive_run:
             if play['offense'] == winner:
                 explosive_plays[0] = explosive_plays[0] + 1
             else:
                 explosive_plays[1] = explosive_plays[1] + 1
-        elif play['pff_RUNPASS'] == 'P' and play['pff_GAINLOSS'] >= explosive_pass:
+        elif play['run_pass'] == 'P' and play['gain_loss_net'] >= explosive_pass:
             if play['offense'] == winner:
                 explosive_plays[0] = explosive_plays[0] + 1
             else:
