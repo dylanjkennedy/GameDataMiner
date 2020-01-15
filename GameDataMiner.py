@@ -61,7 +61,7 @@ def get_games (opponents, params):
 # For a list of games, return game level data for each
 # listof str, {str: str} -> listof listof any
 def game_level_data (games, params):
-    fields = ["Sacks", "Rushing Yards", "Yards per Carry", "Explosive Plays"]
+    fields = ["Sacks", "Rushing Yards", "Yards per Carry", "Explosive Plays", "Red Zone Eff", "Tite Zone Eff"]
     header = ['Game ID', 'Winner', 'Loser']
     for field in fields:
         new_cols = ['Winner ' + field,
@@ -80,6 +80,8 @@ def game_level_data (games, params):
         row += count_rush_yards(plays, game[1], game[2])
         row += get_ypc(plays, game[1], game[2])
         row += count_explosive_plays(plays, game[1], game[2])
+        row += get_zone_efficiency(plays, game[1], game[2], 13, 25)
+        row += get_zone_efficiency(plays, game[1], game[2], 1, 12)
         results.append(row)
     return results
 
@@ -154,6 +156,42 @@ def count_explosive_plays(plays, winner, loser):
                 explosive_plays[1] = explosive_plays[1] + 1
     return get_differentials(explosive_plays)
 
+# For a list of plays and the winning team and losing team
+# count the percentage of times the offense reaches
+# a specified zone and fails to score a TD
+def get_zone_efficiency(plays, winner, loser, min_bound, max_bound):
+    # We want unique drives so we'll use sets to ignore duplicates
+    successful_drives = [set(), set()]
+    total_drives = [set(), set()]
+    for play in plays:
+        if (int(play['field_position']) <= max_bound
+            and int(play['field_position']) >= min_bound):
+            if play['drive_end_event'] != 'TOUCHDOWN':
+                # This is from the perspective of the defense
+                # So touchdowns are bad
+                if play['defense'] == winner:
+                    successful_drives[0].add(play['drive'])
+                else:
+                    successful_drives[1].add(play['drive'])
+            if play['defense'] == winner:
+                total_drives[0].add(play['drive'])
+            else:
+                total_drives[1].add(play['drive'])
+
+    # Adjust for the cases where a team never even gets there
+    # This is a temporary fix
+    if len(total_drives[0]) == 0:
+        successful_drives[0].add('sad')
+        total_drives[0].add('sad')
+    if len(total_drives[1]) == 0:
+        successful_drives[1].add('sad')
+        total_drives[1].add('sad')
+        
+    effeciencies = [round(len(successful_drives[0])/len(total_drives[0]),2),
+                    round(len(successful_drives[1])/len(total_drives[1]),2)]
+
+    return get_differentials(effeciencies)
+            
 
 # For a list of two items, calculate
 # the first minus the second and the second minus the first
