@@ -179,7 +179,6 @@ def get_zone_efficiency(plays, winner, loser, min_bound, max_bound):
                 total_drives[1].add(play['drive'])
 
     # Adjust for the cases where a team never even gets there
-    # This is a temporary fix
     if len(total_drives[0]) == 0:
         successful_drives[0].add('sad')
         total_drives[0].add('sad')
