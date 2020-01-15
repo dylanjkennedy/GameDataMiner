@@ -27,6 +27,8 @@ def get_params (key):
     params = {'Authorization':'Bearer ' + jwt}
     return params
 
+# Grab all team names that are part of a given group
+# str, {str: str} -> listof str
 def get_teams (name, params):
     teams = []
     r = requests.get('https://api.profootballfocus.com/v1/ncaa/2019/teams', headers = params)
@@ -57,7 +59,7 @@ def get_games (opponents, params):
     return games
 
 # For a list of games, return game level data for each
-# listof str, str -> {listof str}
+# listof str, {str: str} -> listof listof any
 def game_level_data (games, params):
     fields = ["Sacks", "Rushing Yards", "Yards per Carry", "Explosive Plays"]
     header = ['Game ID', 'Winner', 'Loser']
@@ -91,6 +93,7 @@ def is_relevant_play(play):
 
 # For a list of plays and the winning team and losing team
 # count the sacks for each
+# listof {str: any}, str, str -> listof 4 num
 def count_sacks(plays, winner, loser):
     sacks = [0, 0]
     for play in plays:
@@ -103,6 +106,7 @@ def count_sacks(plays, winner, loser):
 
 # For a list of plays and the winning team and losing team
 # count the rushing yards for each
+# listof {str: any}, str, str -> listof 4 num
 def count_rush_yards(plays, winner, loser):
     rush_yards = [0, 0]
     for play in plays:
@@ -115,6 +119,7 @@ def count_rush_yards(plays, winner, loser):
 
 # For a list of plays and the winning team and losing team
 # get the yards per carry for each
+# listof {str: any}, str, str -> listof 4 num
 def get_ypc(plays, winner, loser):
     carries = [0, 0]
     yards = [0, 0]
@@ -131,6 +136,7 @@ def get_ypc(plays, winner, loser):
 
 # For a list of plays and the winning team and losing team
 # count the number of explosive plays
+# listof {str: any}, str, str -> listof 4 num
 def count_explosive_plays(plays, winner, loser):
     explosive_run = 10
     explosive_pass = 20
