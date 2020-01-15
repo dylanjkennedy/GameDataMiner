@@ -72,13 +72,22 @@ def game_level_data (games, params):
     for game in games:
         row = game
         r = requests.get('https://api.profootballfocus.com/v1/video/ncaa/games/'+game[0]+'/plays', headers = params)
-        plays = r.json()['plays']
+        all_plays = r.json()['plays']
+        plays = [play for play in all_plays if is_relevant_play(play)]
         row += count_sacks(plays, game[1], game[2])
         row += count_rush_yards(plays, game[1], game[2])
         row += get_ypc(plays, game[1], game[2])
         row += count_explosive_plays(plays, game[1], game[2])
         results.append(row)
     return results
+
+# False if they are "No Plays", special team plays, or kneels
+# Useful for filtering plays
+# {str: any} -> bool
+def is_relevant_play(play):
+    return ((play['no_play'] == 0)
+            and (play['run_pass'] in ['R','P'])
+            and (play['actual_poa'] != 'QB KNEEL'))
 
 # For a list of plays and the winning team and losing team
 # count the sacks for each
