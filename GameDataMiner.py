@@ -66,7 +66,8 @@ def game_level_data (games, params):
               "Yards per Carry",
               "Explosive Plays",
               "Red Zone Eff", "Tite Zone Eff",
-              "3rd Down Eff"]
+              "3rd Down Eff",
+              "Havoc Rate"]
     header = ['Game ID', 'Winner', 'Loser']
     for field in fields:
         new_cols = ['Winner ' + field,
@@ -88,6 +89,7 @@ def game_level_data (games, params):
         row += get_zone_efficiency(plays, game[1], game[2], 13, 25)
         row += get_zone_efficiency(plays, game[1], game[2], 1, 12)
         row += get_third_down_efficiency(plays, game[1], game[2])
+        row += get_havoc_rate(plays, game[1], game[2])
         results.append(row)
     return results
 
@@ -229,7 +231,48 @@ def get_third_down_efficiency(plays, winner, loser):
                     round(successful_third_downs[1]/total_third_downs[1],2)]
 
     return get_differentials(effeciencies)
-            
+
+# For a list of plays and the winning team and losing team
+# get the percentage of plays that end in a
+# sack, TFL, FF, INT, or PBU
+def get_havoc_rate(plays, winner, loser):
+    havoc_plays = [0, 0]
+    total_plays = [0, 0]
+    for play in plays:
+        if play['defense'] == winner:
+            team = 0
+        else:
+            team = 1
+        if ((play['sack'] is not None)
+            or (play['interception'] is not None)
+            or (play['forced_fumble'] is not None)
+            or (play['pass_breakup'] is not None)
+            or ((play['tackle'] is not None)
+                and (play['gain_loss_net'] < 0))):
+            havoc_plays[team] += 1
+        total_plays [team] += 1
+        
+    effeciencies = [round(havoc_plays[0]/total_plays[0],2),
+                    round(havoc_plays[1]/total_plays[1],2)]
+
+    return get_differentials(effeciencies)
+
+# 
+def general_query(plays, winner, loser, cond_field, cond_value, sum_field):
+    outputs = [0, 0]
+    for play in plays:
+        if play['defense'] == winner:
+            team = 0
+        else:
+            team = 1
+        if (play['cond_field'] == cond_value)
+            increment = 1
+            if (sum_field = 'count'):
+                increment = 1
+            else:
+                increment = play['sum_field']
+            outputs[team] += increment
+    
 
 # For a list of two items, calculate
 # the first minus the second and the second minus the first
