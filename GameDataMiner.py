@@ -65,7 +65,8 @@ def game_level_data (games, params):
               "Rushing Yards",
               "Yards per Carry",
               "Explosive Plays",
-              "Red Zone Eff", "Tite Zone Eff"]
+              "Red Zone Eff", "Tite Zone Eff",
+              "3rd Down Eff"]
     header = ['Game ID', 'Winner', 'Loser']
     for field in fields:
         new_cols = ['Winner ' + field,
@@ -196,6 +197,38 @@ def get_zone_efficiency(plays, winner, loser, min_bound, max_bound):
 
     return get_differentials(effeciencies)
 
+# For a list of plays and the winning team and losing team
+# get the percentage of times the defense stops 
+# a third down from being converted
+def get_third_down_efficiency(plays, winner, loser):
+    successful_third_downs = [0, 0]
+    total_third_downs = [0, 0]
+    for play in plays:
+        if (play['down'] == 3):
+            if play['distance'] > play['gain_loss_net']:
+                # This is from the perspective of the defense
+                # So conversions are bad
+                if play['defense'] == winner:
+                    successful_third_downs[0] += 1
+                else:
+                    successful_third_downs[1] += 1
+            if play['defense'] == winner:
+                total_third_downs[0] += 1
+            else:
+                total_third_downs[1] += 1
+
+    # Adjust for the (extremely rare) cases where a team never even gets there
+    if total_third_downs[0] == 0:
+        successful_third_downs[0] = 1
+        total_third_downs[0] = 1
+    if total_third_downs[1] == 0:
+        successful_third_downs[1] = 1
+        total_third_downs[1] = 1
+        
+    effeciencies = [round(successful_third_downs[0]/total_third_downs[0],2),
+                    round(successful_third_downs[1]/total_third_downs[1],2)]
+
+    return get_differentials(effeciencies)
             
 
 # For a list of two items, calculate
