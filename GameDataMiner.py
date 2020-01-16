@@ -96,7 +96,9 @@ def game_level_data (games, params):
         row += sum_yards_after_contact(plays, game[1], game[2])
         row += sum_yards_after_catch(plays, game[1], game[2])
         row += count_missed_tackles(plays, game[1], game[2])
-        row += sum_def_penalties(plays, game[1], game[2])
+        # Penalties can still be relevant for no plays
+        row += sum_def_penalties(all_plays, game[1], game[2])
+        
         results.append(row)
     return results
 
@@ -321,7 +323,10 @@ def sum_def_penalties(plays, winner, loser):
             team = 0
         else:
             team = 1
-        if (play['penalty_yards'] is not None):
+        # For penalties, we are using all plays so must exclude special teams,
+        # while other fields use a pre filtered list of plays.
+        if ((play['penalty_yards'] is not None)
+            and (play['run_pass'] in ['R','P'])):
             # if penalty yards are positive, they are on defense
             if (play['penalty_yards'] > 0):
                 outputs[team] += play['penalty_yards']    
