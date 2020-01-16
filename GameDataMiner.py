@@ -61,7 +61,11 @@ def get_games (opponents, params):
 # For a list of games, return game level data for each
 # listof str, {str: str} -> listof listof any
 def game_level_data (games, params):
-    fields = ["Sacks", "Rushing Yards", "Yards per Carry", "Explosive Plays", "Red Zone Eff", "Tite Zone Eff"]
+    fields = ["Sacks",
+              "Rushing Yards",
+              "Yards per Carry",
+              "Explosive Plays",
+              "Red Zone Eff", "Tite Zone Eff"]
     header = ['Game ID', 'Winner', 'Loser']
     for field in fields:
         new_cols = ['Winner ' + field,
@@ -82,6 +86,7 @@ def game_level_data (games, params):
         row += count_explosive_plays(plays, game[1], game[2])
         row += get_zone_efficiency(plays, game[1], game[2], 13, 25)
         row += get_zone_efficiency(plays, game[1], game[2], 1, 12)
+        row += get_third_down_efficiency(plays, game[1], game[2])
         results.append(row)
     return results
 
@@ -157,8 +162,8 @@ def count_explosive_plays(plays, winner, loser):
     return get_differentials(explosive_plays)
 
 # For a list of plays and the winning team and losing team
-# count the percentage of times the offense reaches
-# a specified zone and fails to score a TD
+# get the percentage of times the defense gets into
+# a specified zone and prevents a TD
 def get_zone_efficiency(plays, winner, loser, min_bound, max_bound):
     # We want unique drives so we'll use sets to ignore duplicates
     successful_drives = [set(), set()]
@@ -190,6 +195,7 @@ def get_zone_efficiency(plays, winner, loser, min_bound, max_bound):
                     round(len(successful_drives[1])/len(total_drives[1]),2)]
 
     return get_differentials(effeciencies)
+
             
 
 # For a list of two items, calculate
