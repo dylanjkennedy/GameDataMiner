@@ -61,13 +61,16 @@ def get_games (opponents, params):
 # For a list of games, return game level data for each
 # listof str, {str: str} -> listof listof any
 def game_level_data (games, params):
-    fields = ["Sacks",
-              "Rushing Yards",
-              "Yards per Carry",
-              "Explosive Plays",
-              "Red Zone Eff", "Tite Zone Eff",
-              "3rd Down Eff",
-              "Havoc Rate"]
+    fields = ['Sacks',
+              'Rushing Yards',
+              'Yards per Carry',
+              'Explosive Plays',
+              'Red Zone Eff', 'Tite Zone Eff',
+              '3rd Down Eff',
+              'Havoc Rate',
+              'Yards After Contact', 'Yards After Catch',
+              'Missed Tackles',
+              'Def Penalties']
     header = ['Game ID', 'Winner', 'Loser']
     for field in fields:
         new_cols = ['Winner ' + field,
@@ -90,6 +93,10 @@ def game_level_data (games, params):
         row += get_zone_efficiency(plays, game[1], game[2], 1, 12)
         row += get_third_down_efficiency(plays, game[1], game[2])
         row += get_havoc_rate(plays, game[1], game[2])
+        row += sum_yards_after_contact(plays, game[1], game[2])
+        row += sum_yards_after_catch(plays, game[1], game[2])
+        row += count_missed_tackles(plays, game[1], game[2])
+        row += sum_def_penalties(plays, game[1], game[2])
         results.append(row)
     return results
 
@@ -167,6 +174,7 @@ def count_explosive_plays(plays, winner, loser):
 # For a list of plays and the winning team and losing team
 # get the percentage of times the defense gets into
 # a specified zone and prevents a TD
+# listof {str: any}, str, str, num, num -> listof 4 num
 def get_zone_efficiency(plays, winner, loser, min_bound, max_bound):
     # We want unique drives so we'll use sets to ignore duplicates
     successful_drives = [set(), set()]
@@ -202,6 +210,7 @@ def get_zone_efficiency(plays, winner, loser, min_bound, max_bound):
 # For a list of plays and the winning team and losing team
 # get the percentage of times the defense stops 
 # a third down from being converted
+# listof {str: any}, str, str -> listof 4 num
 def get_third_down_efficiency(plays, winner, loser):
     successful_third_downs = [0, 0]
     total_third_downs = [0, 0]
@@ -235,6 +244,7 @@ def get_third_down_efficiency(plays, winner, loser):
 # For a list of plays and the winning team and losing team
 # get the percentage of plays that end in a
 # sack, TFL, FF, INT, or PBU
+# listof {str: any}, str, str -> listof 4 num
 def get_havoc_rate(plays, winner, loser):
     havoc_plays = [0, 0]
     total_plays = [0, 0]
@@ -256,23 +266,66 @@ def get_havoc_rate(plays, winner, loser):
                     round(havoc_plays[1]/total_plays[1],2)]
 
     return get_differentials(effeciencies)
+            
+# For a list of plays and the winning team and losing team
+# sum the yards a runner gains after first contact
+# listof {str: any}, str, str -> listof 4 num
+def sum_yards_after_contact(plays, winner, loser):
+    outputs = [0, 0]
+    for play in plays:
+        if play['offense'] == winner:
+            team = 0
+        else:
+            team = 1
+        if (play['yards_after_contact'] is not None):
+            outputs[team] += play['yards_after_contact']
 
-# 
-def general_query(plays, winner, loser, cond_field, cond_value, sum_field):
+    return get_differentials(outputs)
+
+# For a list of plays and the winning team and losing team
+# sum the yards a runner gains after the catch
+# listof {str: any}, str, str -> listof 4 num
+def sum_yards_after_catch(plays, winner, loser):
+    outputs = [0, 0]
+    for play in plays:
+        if play['offense'] == winner:
+            team = 0
+        else:
+            team = 1
+        if (play['yards_after_catch'] is not None):
+            outputs[team] += play['yards_after_catch']    
+    return get_differentials(outputs)
+
+# For a list of plays and the winning team and losing team
+# count the number of missed tackles the defense makes
+# listof {str: any}, str, str -> listof 4 num
+def count_missed_tackles(plays, winner, loser):
     outputs = [0, 0]
     for play in plays:
         if play['defense'] == winner:
             team = 0
         else:
             team = 1
-        if (play['cond_field'] == cond_value)
-            increment = 1
-            if (sum_field = 'count'):
-                increment = 1
-            else:
-                increment = play['sum_field']
-            outputs[team] += increment
-    
+        if (play['missed_tackle'] is not None):
+            # If multiple tackles are missed, they will be seperated by ';'
+            outputs[team] += play['missed_tackle'].count(';') + 1  
+    return get_differentials(outputs)
+
+# For a list of plays and the winning team and losing team
+# sum the yards lost due to defensive penalties
+# listof {str: any}, str, str -> listof 4 num
+def sum_def_penalties(plays, winner, loser):
+    outputs = [0, 0]
+    for play in plays:
+        if play['defense'] == winner:
+            team = 0
+        else:
+            team = 1
+        if (play['penalty_yards'] is not None):
+            # if penalty yards are positive, they are on defense
+            if (play['penalty_yards'] > 0):
+                outputs[team] += play['penalty_yards']    
+    return get_differentials(outputs)
 
 # For a list of two items, calculate
 # the first minus the second and the second minus the first
