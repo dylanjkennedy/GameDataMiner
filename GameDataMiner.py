@@ -70,7 +70,8 @@ def game_level_data (games, params):
               'Havoc Rate',
               'Yards After Contact', 'Yards After Catch',
               'Missed Tackles',
-              'Def Penalties']
+              'Def Penalties',
+              'Def DSSR']
     header = ['Game ID', 'Winner', 'Loser']
     for field in fields:
         new_cols = ['Winner ' + field,
@@ -98,6 +99,7 @@ def game_level_data (games, params):
         row += count_missed_tackles(plays, game[1], game[2])
         # Penalties can still be relevant for no plays
         row += sum_def_penalties(all_plays, game[1], game[2])
+        row += get_def_DSSR(plays, game[1], game[2])
         
         results.append(row)
     return results
@@ -331,6 +333,39 @@ def sum_def_penalties(plays, winner, loser):
             if (play['penalty_yards'] > 0):
                 outputs[team] += play['penalty_yards']    
     return get_differentials(outputs)
+
+# For a list of plays and the winning and losing team,
+# get he percentage of 1st down series where the defense
+# is able to prevent another 1st down or TD
+def get_def_DSSR(plays, winner, loser):
+    first_downs = [0, 0]
+    drives = [0, 0]
+    tds = [0, 0]
+
+    
+    for play in plays:
+        if play['defense'] == winner:
+            team = 0
+        else:
+            team = 1
+
+        # Let's get the total number of opportunities
+        if play['down'] == 1:
+            first_downs[team] += 1
+
+        # But someone of those were not earned, find how many were new drives
+        if play['drive'] is not None:
+            drives[team] = max(play['drive'], drives[team])
+
+        # Also include touchdowns as successes
+        if play['touchdown'] is not None:
+            tds[team] += 1
+
+    DSSRs = [0, 0]
+    for team in [0, 1]:
+        DSSRs[team] = 1 - round((first_downs[team] - drives[team] + tds[team])
+                                / (first_downs[team]), 2)
+    return get_differentials(DSSRs)
 
 # For a list of two items, calculate
 # the first minus the second and the second minus the first
