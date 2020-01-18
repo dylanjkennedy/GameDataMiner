@@ -76,6 +76,7 @@ def game_level_data (games, params):
               'Turnover Opportunities',
               'Passing Yards',
               'Yards per Pass Attempt',
+              'Yards per Completion',
               'Pressures']
     header = ['Game ID', 'Winner', 'Loser']
     for field in fields:
@@ -109,6 +110,7 @@ def game_level_data (games, params):
         row += get_turnover_opps(plays, game[1], game[2])
         row += count_pass_yards(plays, game[1], game[2])
         row += get_yards_per_attempt(plays, game[1], game[2])
+        row += get_yards_per_completion(plays, game[1], game[2])
         row += count_pressures(plays, game[1], game[2])
         results.append(row)
     return results
@@ -448,6 +450,22 @@ def get_turnover_opps(plays, winner, loser):
             turnovers[team] += 1
 
     return get_differentials(turnovers)
+
+# For a list of plays and the winning and losing team,
+# get the yards per pass completion for each team
+def get_yards_per_completion(plays, winner, loser):
+    catches = [0, 0]
+    yards = [0, 0]
+    for play in plays:
+        if play['run_pass'] == 'P' and play['pass_result'] == 'COMPLETE':
+            if play['offense'] == winner:
+                catches[0] = catches[0] + 1
+                yards[0] = yards[0] + play['gain_loss_net']
+            else:
+                catches[1] = catches[1] + 1
+                yards[1] = yards[1] + play['gain_loss_net']
+    ypc = [round(yards[0]/catches[0], 2), round(yards[1]/catches[1], 2)]
+    return get_differentials(ypc)
 
 # For a list of two items, calculate
 # the first minus the second and the second minus the first
