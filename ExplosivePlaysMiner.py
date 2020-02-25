@@ -49,7 +49,7 @@ def get_games (opponents, params):
     games = []
     for game in r.json()['games']:
         if game['away_team'] in opponents and game['home_team'] in opponents:
-            if game['season'] >= 2019:
+            if game['season'] >= 2015:
                 if game['away_team_score'] > game['home_team_score']:
                     winner = game['away_team']
                     loser = game['home_team']
