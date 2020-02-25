@@ -1,13 +1,14 @@
 import requests
 import csv
 import sys
+import os
 
 # When given an api-key, make a csv of all 2019 B1G games
 # Providing game level detail
 # string -> csv
 def mainloop():
     args = sys.argv
-    key = args[1]
+    key = os.environ['PFF_API_KEY']
 
     params = get_params(key)
     teams = get_teams("Big Ten", params)
