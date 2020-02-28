@@ -7,7 +7,8 @@ import os
 # Providing game level detail
 # string -> csv
 def mainloop():
-    key = os.environ['PFF_API_KEY']
+    args = sys.argv
+    key = args[1]
 
     params = get_params(key)
     teams = get_teams("Big Ten", params)
@@ -78,7 +79,26 @@ def game_level_data (games, params):
               'Passing Yards',
               'Yards per Pass Attempt',
               'Yards per Completion',
-              'Pressures']
+              'Pressures',
+              'Run Plays',
+              '1st Down Run Plays',
+              '2nd Down Run Plays',
+              '3rd Down Run Plays',
+              '4th Down Run Plays',
+              'Pass Plays',
+              '1st Down Pass Plays',
+              '2nd Down Pass Plays',
+              '3rd Down Pass Plays',
+              '4th Down Pass Plays',
+              '1st Down Yards per Rush Play',
+              '2nd Down Yards per Rush Play',
+              '3rd Down Yards per Rush Play',
+              '4th Down Yards per Rush Play',
+              '1st Down Yards per Pass Play',
+              '2nd Down Yards per Pass Play',
+              '3rd Down Yards per Pass Play',
+              '4th Down Yards per Pass Play',
+              'Completion Percentage']
     header = ['Game ID', 'Winner', 'Loser']
     for field in fields:
         new_cols = ['Winner ' + field,
@@ -105,13 +125,32 @@ def game_level_data (games, params):
         # Penalties can still be relevant for no plays
         row += sum_def_penalties(all_plays, game[1], game[2])
         row += get_def_DSSR(plays, game[1], game[2])
-        # Turnovers are special, they are now the only one that include differences 
+        # Turnovers are special, they are now the only one that include differences
         row += get_turnovers(plays, game[1], game[2])
         row += get_turnover_opps(plays, game[1], game[2])
         row += count_pass_yards(plays, game[1], game[2])
         row += get_yards_per_attempt(plays, game[1], game[2])
         row += get_yards_per_completion(plays, game[1], game[2])
         row += count_pressures(plays, game[1], game[2])
+        row += get_rush_plays(plays, game[1], game[2])
+        row += get_rush_plays_down(plays, game[1], game[2], 1)
+        row += get_rush_plays_down(plays, game[1], game[2], 2)
+        row += get_rush_plays_down(plays, game[1], game[2], 3)
+        row += get_rush_plays_down(plays, game[1], game[2], 4)
+        row += get_pass_plays(plays, game[1], game[2])
+        row += get_pass_plays_down(plays, game[1], game[2], 1)
+        row += get_pass_plays_down(plays, game[1], game[2], 2)
+        row += get_pass_plays_down(plays, game[1], game[2], 3)
+        row += get_pass_plays_down(plays, game[1], game[2], 4)
+        row += get_yards_per_carry_down(plays, game[1], game[2], 1)
+        row += get_yards_per_carry_down(plays, game[1], game[2], 2)
+        row += get_yards_per_carry_down(plays, game[1], game[2], 3)
+        row += get_yards_per_carry_down(plays, game[1], game[2], 4)
+        row += get_yards_per_pass_play_down(plays, game[1], game[2], 1)
+        row += get_yards_per_pass_play_down(plays, game[1], game[2], 2)
+        row += get_yards_per_pass_play_down(plays, game[1], game[2], 3)
+        row += get_yards_per_pass_play_down(plays, game[1], game[2], 4)
+        row += get_completion_pct(plays, game[1], game[2])
         results.append(row)
     return results
 
@@ -187,7 +226,7 @@ def count_explosive_plays(plays, winner, loser):
     return explosive_plays
 
 # For a list of plays and the winning team and losing team
-# get the points per possesion that a team is in 
+# get the points per possesion that a team is in
 # a specified zone
 # listof {str: any}, str, str, num, num -> listof 2 num
 def get_zone_ppp(plays, winner, loser, min_bound, max_bound):
@@ -201,7 +240,7 @@ def get_zone_ppp(plays, winner, loser, min_bound, max_bound):
                       'INTERCEPTION': 0,
                       'FUMBLE-TD': -7,
                       'INTERCEPTION-TD': -7}
-    
+
     # We want unique drives so we'll use sets to ignore duplicates
     point_counter = [0, 0]
     total_drives = [set(), set()]
@@ -476,5 +515,109 @@ def get_yards_per_completion(plays, winner, loser):
                 yards[1] = yards[1] + play['gain_loss_net']
     ypc = [round(yards[0]/catches[0], 2), round(yards[1]/catches[1], 2)]
     return ypc
+
+# For a list of plays and the winning and losing team,
+# get the number of rushing plays by each team
+def get_rush_plays(plays, winner, loser):
+    rush_plays = [0, 0]
+    for play in plays:
+        if play['run_pass'] == 'R':
+            if play['offense'] == winner:
+                rush_plays[0] += 1
+            else:
+                rush_plays[1] += 1
+    return rush_plays
+
+# For a list of plays and the winning and losing team,
+# get the number of rushing plays by each team on a specific down
+def get_rush_plays_down(plays, winner, loser, down):
+    rush_plays = [0, 0]
+    for play in plays:
+        if play['run_pass'] == 'R' and play['down'] == down:
+            if play['offense'] == winner:
+                rush_plays[0] += 1
+            else:
+                rush_plays[1] += 1
+    return rush_plays
+
+# For a list of plays and the winning and losing team,
+# get the number of passing plays by each team
+def get_pass_plays(plays, winner, loser):
+    pass_plays = [0, 0]
+    for play in plays:
+        if play['run_pass'] == 'P':
+            if play['offense'] == winner:
+                pass_plays[0] += 1
+            else:
+                pass_plays[1] += 1
+    return pass_plays
+
+# For a list of plays and the winning and losing team,
+# get the number of passing plays by each team on a specific down
+def get_pass_plays_down(plays, winner, loser, down):
+    pass_plays = [0, 0]
+    for play in plays:
+        if play['run_pass'] == 'R' and play['down'] == down:
+            if play['offense'] == winner:
+                pass_plays[0] += 1
+            else:
+                pass_plays[1] += 1
+    return pass_plays
+
+# For a list of plays and the winning and losing team,
+# get the yards per rushing play on a specific down
+def get_yards_per_carry_down(plays, winner, loser, down):
+    carries = [0, 0]
+    yards = [0, 0]
+    for play in plays:
+        if play['run_pass'] == 'R' and play['down'] == down:
+            if play['offense'] == winner:
+                carries[0] = carries[0] + 1
+                yards[0] = yards[0] + play['gain_loss_net']
+            else:
+                carries[1] = carries[1] + 1
+                yards[1] = yards[1] + play['gain_loss_net']
+    ypc = [0, 0]
+    if carries[0] != 0:
+        ypc[0] = round(yards[0]/carries[0], 2)
+    if carries[1] != 0:
+        ypc[1] = round(yards[1]/carries[1], 2)
+    return ypc
+
+def get_yards_per_pass_play_down(plays, winner, loser, down):
+    catches = [0, 0]
+    yards = [0, 0]
+    for play in plays:
+        if play['run_pass'] == 'P' and play['down'] == down:
+            if play['offense'] == winner:
+                catches[0] = catches[0] + 1
+                yards[0] = yards[0] + play['gain_loss_net']
+            else:
+                catches[1] = catches[1] + 1
+                yards[1] = yards[1] + play['gain_loss_net']
+    ypc = [0, 0]
+    if catches[0] != 0:
+        ypc[0] = round(yards[0]/catches[0], 2)
+    if catches[1] != 0:
+        ypc[1] = round(yards[1]/catches[1], 2)
+    return ypc
+
+def get_completion_pct(plays, winner, loser):
+    passes = [0, 0]
+    completions = [0, 0]
+    for play in plays:
+        if play['run_pass'] == 'P':
+            if play['offense'] == winner:
+                passes[0] += 1
+            else:
+                passes[1] += 1
+            if play['pass_result'] == 'COMPLETE':
+                if play['offense'] == winner:
+                    completions[0] += 1
+                else:
+                    completions[1] += 1
+    completion_pct = [round(completions[0]/passes[0], 2), round(completions[1]/passes[1], 2)]
+    return completion_pct
+
 
 mainloop()
