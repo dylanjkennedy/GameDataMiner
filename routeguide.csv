@@ -1,0 +1,174 @@
+﻿Filler,pff_PASSROUTE,pff_PASSROUTENAME,Route Group ID#,Route Group
+,0,WR SCREEN,1,WR/TE Screens
+,1,FLAT,4,Out Routes
+,2,SLANT,3,Slants
+,3,OUT,4,Out Routes
+,4,IN,5,In Routes
+,5,COMEBACK,6,Comebacks
+,6,HITCH,7,Hitches
+,7,CORNER,8,Corner Routes
+,8,POST,9,Post Routes
+,9,Go,10,Go Routes
+,12,WHIP-IN,5,In Routes
+,16,FLAT-HITCH,4,Out Routes
+,17,FLAT-CORNER,8,Corner Routes
+,18,FLAT & POST,18,Wheels
+,19,FLAT & UP,10,Go Routes
+,21,WHIP-OUT,4,Out Routes
+,26,SLANT-HITCH,7,Hitches
+,27,SLANT-CORNER,8,Corner Routes
+,28,SLANT-POST,9,Post Routes
+,29,SLUGGO,10,Go Routes
+,31,ARROW,4,Out Routes
+,34,OUT & IN,5,In Routes
+,36,OUT-HITCH,7,Hitches
+,37,OUT-CORNER,8,Corner Routes
+,38,Out-Post,9,Post Routes
+,39,OUT & UP,10,Go Routes
+,43,IN & OUT,4,Out Routes
+,46,IN-HITCH,7,Hitches
+,47,In-Corner,8,Corner Routes
+,48,In-Post,9,Post Routes
+,49,In & Up,10,Go Routes
+,54,BACK & IN,5,In Routes
+,59,BACK & GO,10,Go Routes
+,63,HITCH-OUT,4,Out Routes
+,64,HITCH-IN,5,In Routes
+,67,HITCH-CORNER,8,Corner Routes
+,68,HITCH-POST,9,Post Routes
+,69,HITCH & GO,10,Go Routes
+,76,CORNER-SIT,7,Hitches
+,78,CORNER-POST,9,Post Routes
+,79,CORNER-GO,10,Go Routes
+,83,POST-OUT,4,Out Routes
+,84,POST-IN,5,In Routes
+,86,POST-SIT,7,Hitches
+,87,POST-CORNER,8,Corner Routes
+,89,POST-GO,10,Go Routes
+,123,"WHIP-IN, OUT",4,Out Routes
+,214,"WHIP-OUT, IN",5,In Routes
+,193,"FLAT & UP, OUT",4,Out Routes
+,195,"FLAT & UP, COMEBACK",6,Comebacks
+,196,"FLAT & UP, HITCH",7,Hitches
+,293,SLUGGO-OUT,4,Out Routes
+,294,SLUGGO-IN,5,In Routes
+,295,SLUGGO-COMEBACK,6,Comebacks
+,296,SLUGGO-HITCH,7,Hitches
+,316,ARROW STOP,4,Out Routes
+,395,"OUT & UP, COMEBACK",6,Comebacks
+,396,"OUT & UP, HITCH",7,Hitches
+,693,"HITCH & GO, OUT",4,Out Routes
+,694,"HITCH & GO, IN",5,In Routes
+,695,"HITCH & GO, COMEBACK",6,Comebacks
+,696,"HITCH & GO, HITCH",7,Hitches
+,786,"CORNER-POST, HITCH",7,Hitches
+,789,"CORNER-POST, GO",10,Go Routes
+,876,"POST-CORNER, SIT",7,Hitches
+,878,Post-Corner-Post,9,Post Routes
+,879,Post-Corner-Go,10,Go Routes
+,xd,DRAG,11,Crossing Routes
+,xo,OVER,11,Crossing Routes
+,xg,GHOST,11,Crossing Routes
+,xj,JET,11,Crossing Routes
+,x6,SIT,7,Hitches
+,xd9,Drag-Wheel,11,Crossing Routes
+,xd9s,CROSS-SEAM,10,Go Routes
+,0t,TUNNEL,1,WR/TE Screens
+,0u,BUBBLE,1,WR/TE Screens
+,h0,SCREEN,12,HB Screens
+,h1,SCREEN,12,HB Screens
+,h2,FLARE,15,Flares
+,h21,FLAT,15,Flares
+,h26,Wide Hitch,15,Flares
+,h3,FLARE,15,Flares
+,h31,FLAT,15,Flares
+,h36,Wide Hitch,15,Flares
+,h4,OUT,4,Out Routes
+,h46,OUT-SIT,4,Out Routes
+,h49,OUT & UP,10,Go Routes
+,h5,OUT,4,Out Routes
+,h56,OUT-SIT,4,Out Routes
+,h59,OUT & UP,10,Go Routes
+,h6,CIRCLE,17,Pivots
+,h65,CIRCLE COMEBACK,17,Pivots
+,h66,PIVOT,17,Pivots
+,h67,CORNER,10,Go Routes
+,h68,POST,10,Go Routes
+,h6s,SEAM,10,Go Routes
+,h7,CIRCLE,17,Pivots
+,h75,CIRCLE COMEBACK,17,Pivots
+,h76,PIVOT,17,Pivots
+,h77,CORNER,10,Go Routes
+,h78,POST,10,Go Routes
+,h7s,SEAM,10,Go Routes
+,h8,WHEEL,18,Wheels
+,h83,WHEEL-OUT,18,Wheels
+,h84,WHEEL-IN,18,Wheels
+,h85,WHEEL-BACK,18,Wheels
+,h86,WHEEL-HITCH,18,Wheels
+,h87,WHEEL-CORNER,18,Wheels
+,h8b,BACK SHOULDER WHEEL,18,Wheels
+,h9,WHEEL,18,Wheels
+,h93,WHEEL-OUT,18,Wheels
+,h94,WHEEL-IN,18,Wheels
+,h95,WHEEL-BACK,18,Wheels
+,h96,WHEEL-HITCH,18,Wheels
+,h97,WHEEL-CORNER,18,Wheels
+,h9b,BACK SHOULDER WHEEL,18,Wheels
+,s0,SHOVEL,12,HB Screens
+,s1,SHOVEL,12,HB Screens
+,9b,BACK SHOULDER GO,10,Go Routes
+,19b,BACK SHOULDER FLAT & UP,10,Go Routes
+,69b,BACK SHOULDER HITCH & GO,10,Go Routes
+,8b,BACK SHOULDER POST,9,Post Routes
+,9s,SEAM,10,Go Routes
+,8s,SKINNY POST,9,Post Routes
+,9sb,BACK SHOULDER SEAM,10,Go Routes
+,8sb,BACK SHOULDER SKINNY POST,9,Post Routes
+,29s,SLUGGO SEAM,10,Go Routes
+,39s,Out & Up Seam,10,Go Routes
+,49s,In-Seam,10,Go Routes
+,69s,HITCH & GO SEAM,10,Go Routes
+,79s,Corner-Seam,10,Go Routes
+,89s,Post-Seam,10,Go Routes
+,28s,Slant-Skinny Post,9,Post Routes
+,38s,Out-Skinny Post,9,Post Routes
+,48s,In-Skinny Post,9,Post Routes
+,68s,Hitch-Skinny Post,9,Post Routes
+,78s,Corner-Skinny Post,9,Post Routes
+,879s,Post-Corner-Seam,10,Go Routes
+,789s,"CORNER-POST, SEAM",10,Go Routes
+,xgh3,GHOST FLARE,15,Flares
+,xgh2,GHOST FLARE,15,Flares
+,29b,Back Shoulder Sluggo,10,Go Routes
+,11,HOT,7,Hitches
+,9bi,BACK SHOULDER INSIDE RELEASE,10,Go Routes
+,39b,Back Shoulder Out & Up,10,Go Routes
+,9bo,BACK SHOULDER OUTSIDE RELEASE,10,Go Routes
+,k,Pass block,19,Modifiers
+,c,CHIP BLOCK,19,Modifiers
+,787,CORNER-POST-CORNER,8,Corner Routes
+,99,FADE,10,Go Routes
+,f,FAKE,19,Modifiers
+,fl,FAKE LEFT,19,Modifiers
+,fr,FAKE RIGHT,19,Modifiers
+,/,FELL DOWN/KNOCKED DOWN,19,Modifiers
+,194,"FLAT & UP, IN",5,In Routes
+,ff,FLEA FLICKER,19,Modifiers
+,9o,GO OUTSIDE RELEASE,10,Go Routes
+,n,NO ROUTE,19,Modifiers
+,r,RUN PLAY,19,Modifiers
+,z,SCREEN BLOCK,19,Modifiers
+,9si,SEAM INSIDE RELEASE,10,Go Routes
+,9so,SEAM OUTSIDE RELEASE,10,Go Routes
+,xu,UNDER,11,Crossing Routes
+,669,Stutter go,10,Go Routes
+,339,Nod go,10,Go Routes
+,9y,Numbers go,10,Go Routes
+,x6d,Shake,11,Crossing Routes
+,xuxd,Hide drag,11,Crossing Routes
+,xl,Behind LB,11,Crossing Routes
+,h61,HB whip right,17,Pivots
+,h71,HB whip left,17,Pivots
+,h62,HB angle right,17,Pivots
+,h72,HB angle left,17,Pivots
