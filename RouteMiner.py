@@ -3,17 +3,30 @@ import csv
 import sys
 import os
 
-# When given an api-key, make a csv of all 2019 B1G games
-# Providing game level detail
-# string -> csv
+# Get all routes run by certain teams, against certain teams, in a range of years
+# Then reformat for easier use
+# void -> csv
 def mainloop():
-    args = sys.argv
+    # Currently this script does not take any arguments, it has enough params
+    # It is easier to edit the file directly, but all edits should be done in mainloop.
+    # args = sys.argv
+
+    # If this doesn't work, copy and paste key but DO NOT commit the key publcily
     key = os.environ['PFF_API_KEY']
 
     params = get_params(key)
+
+    # TODO choose NFL or NCAA and use that to modify API requests
+
+    # TODO enable us to include both groups and individual teams as arguments
     #teams = get_teams(["ACC"], params)
     teams = ["MABC"]
+
+    # TODO specify min and max years
     games = get_games(teams, params)
+
+    # TODO, let us specify which routes we want not just by which games, but by
+    # which teams are on offense and which teams are on defense
     output = route_level_data(games, params)
 
     #return output
@@ -41,8 +54,7 @@ def get_teams (names, params):
                 teams.append(team['gsis_abbreviation'])
     return teams
 
-# For B1G opponents, return all game ids in which they played in 2019
-# And report the id first, then winning team, then the losing team
+# Pull all games that a list of opponents played in
 # str, {str: str} -> listof str
 def get_games (opponents, params):
     r = requests.get('https://api.profootballfocus.com/v1/video/ncaa/games', headers = params)
@@ -50,11 +62,11 @@ def get_games (opponents, params):
     games = []
     for game in r.json()['games']:
         if game['away_team'] in opponents or game['home_team'] in opponents:
-            if game['season'] >= 2019:
+            if game['season'] >= 2019: # TODO let this be a param tweaked in mainloop
                 games.append(str(game['id']))
     return games
 
-# For a list of games, return game level data for each
+# For a list of games, return routes from those games and reformat
 # listof str, {str: str} -> listof listof any
 def route_level_data (games, params):
     header = ['Play Id',
@@ -71,15 +83,14 @@ def route_level_data (games, params):
     results = [header]
 
     counter = 0
-    bad_counter = 0
     for game in games:
-        print(game)
+        print(game) # Helps track progress
         r = requests.get('https://api.profootballfocus.com/v1/video/ncaa/games/'+game+'/plays', headers = params)
         plays = r.json()['plays']
         for play in plays:
             if play['pass_pattern'] is None:
                 continue
-            if play['offense'] != 'MABC':
+            if play['offense'] != 'MABC': # TODO This shouldn't be hardcoded here 
                 continue
             counter += 1
             row = [play['play_id'],
@@ -104,15 +115,15 @@ def process_player(code):
     parts = code.split(' ')
 
     # Get the player position and what side of the ball they were on
-    for position in ['WR', 'QB', 'TE', 'HB', 'FB']:
+    for position in ['WR', 'QB', 'TE', 'HB', 'FB']: # We haven't needed more positions so far
         if position in parts[0]:
-            output[0] = position # maybe this should be parts[0] instead?
+            output[0] = position # maybe this should be parts[0] instead? (TE-r vs TE)
             side = parts[0].replace(position,'')
             if 'L' in side:
                 output[1] = 'L'
             if 'R' in side:
                 output[1] = 'R'
-            if 'L' in side and 'R' in side:
+            if 'L' in side and 'R' in side: # We should hopefully never get this case
                 output[1] = ''
 
     
@@ -127,14 +138,20 @@ def process_player(code):
         if (route['pff_PASSROUTE'] == parts[1]):
             output[2] = route['pff_PASSROUTENAME']
             break
+        # Check inside or outside routes
         elif (route['pff_PASSROUTE'] + 'i' == parts[1] or route['pff_PASSROUTE'] + 'o' == parts[1]):
             output[2] = route['pff_PASSROUTENAME']
             break
+
+    # Note if we encounter no blocking modifiers or valid pass routes,
+    # the value remains an empty string
 
     # Take the depth as is
     output[3] = parts[2]
     return output
 
+# This CSV needs to have an extra blank first column,
+# perhaps that should be looked into and fixed?
 with open('routeguide.csv',newline='') as csvfile:
 	reader = csv.DictReader(csvfile)
 	ROUTE_INFO = list(reader)
