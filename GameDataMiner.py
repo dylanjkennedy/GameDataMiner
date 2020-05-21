@@ -8,7 +8,7 @@ import os
 # string -> csv
 def mainloop():
     args = sys.argv
-    key = args[1]
+    key = os.environ['PFF_API_KEY']
 
     params = get_params(key)
     teams = get_teams("Big Ten", params)
@@ -98,7 +98,12 @@ def game_level_data (games, params):
               '2nd Down Yards per Pass Play',
               '3rd Down Yards per Pass Play',
               '4th Down Yards per Pass Play',
-              'Completion Percentage']
+              'Completion Percentage',
+              '3rd Downs Faced',
+              '3rd and Long Percentage',
+              'Rate of Reaching Red Zone',
+              'Average Endpoint on Red Zone Drives',
+              '3 and Outs']
     header = ['Game ID', 'Winner', 'Loser']
     for field in fields:
         new_cols = ['Winner ' + field,
@@ -151,6 +156,11 @@ def game_level_data (games, params):
         row += get_yards_per_pass_play_down(plays, game[1], game[2], 3)
         row += get_yards_per_pass_play_down(plays, game[1], game[2], 4)
         row += get_completion_pct(plays, game[1], game[2])
+        row += get_third_downs(plays, game[1], game[2])
+        row += get_third_and_long_pct(plays, game[1], game[2])
+        row += get_drives_reaching_rz_pct(plays, game[1], game[2])
+        row += get_avg_end_posn_rz(plays, game[1], game[2])
+        row += get_three_and_outs(plays, game[1], game[2])
         results.append(row)
     return results
 
@@ -238,6 +248,7 @@ def get_zone_ppp(plays, winner, loser, min_bound, max_bound):
                       'MISSED FG': 0,
                       'FUMBLE': 0,
                       'INTERCEPTION': 0,
+                      None: 0,
                       'FUMBLE-TD': -7,
                       'INTERCEPTION-TD': -7}
 
@@ -619,5 +630,92 @@ def get_completion_pct(plays, winner, loser):
     completion_pct = [round(completions[0]/passes[0], 2), round(completions[1]/passes[1], 2)]
     return completion_pct
 
+def get_third_downs(plays, winner, loser):
+    third_downs = [0, 0]
+    for play in plays:
+        if play['defense'] == winner:
+            if play['down'] == 3:
+                third_downs[0] += 1
+        else:
+            if play['down'] == 3:
+                third_downs[1] += 1
+    return third_downs
+
+def get_third_and_long_pct(plays, winner, loser):
+    third_downs = get_third_downs(plays, winner, loser)
+    third_and_long = [0, 0]
+    for play in plays:
+        if play['down'] == 3 and play['distance'] >= 5:
+            if play['defense'] == winner:
+                third_and_long[0] += 1
+            else:
+                third_and_long[1] += 1
+    third_and_long_pct = [round(third_and_long[0]/third_downs[0], 2), round(third_and_long[1]/third_downs[1], 2)]
+    return third_and_long_pct
+
+def get_drives_reaching_rz_pct(plays, winner, loser):
+    total_drives = [set(), set()]
+    drives_reaching_rz = [set(), set()]
+    for play in plays:
+        if play['drive'] not in total_drives[0] and play['drive'] not in total_drives[1]:
+            if play['defense'] == winner:
+                total_drives[0].add(play['drive'])
+            else:
+                total_drives[1].add(play['drive'])
+            field_posn = play['drive_end_field_position']
+            if field_posn == None:
+                pass
+            elif field_posn[0] == "+":
+                field_posn = int(field_posn[1:])
+                if field_posn >= 0 and field_posn <= 20:
+                    if play['defense'] == winner:
+                        drives_reaching_rz[0].add(play['drive'])
+                    else:
+                        drives_reaching_rz[1].add(play['drive'])
+    for i in [0, 1]:
+        if len(total_drives[i]) == 0:
+            total_drives[i].add('sad')
+    rates = [round(len(drives_reaching_rz[0])/len(total_drives[0]),2), round(len(drives_reaching_rz[1])/len(total_drives[1]), 2)]
+    return rates
+
+def get_avg_end_posn_rz(plays, winner, loser):
+    total_end_posn = [0, 0]
+    total_drives = [set(), set()]
+    for play in plays:
+        if play['drive'] not in total_drives[0] and play['drive'] not in total_drives[1]:
+            field_posn = play['drive_end_field_position']
+            if field_posn == None:
+                pass
+            elif field_posn[0] == "+":
+                field_posn = int(field_posn[1:])
+                if field_posn >= 0 and field_posn <= 20:
+                    if play['defense'] == winner:
+                        total_drives[0].add(play['drive'])
+                        total_end_posn[0] += field_posn
+                    else:
+                        total_drives[1].add(play['drive'])
+                        total_end_posn[1] += field_posn
+    for i in [0, 1]:
+        if len(total_drives[i]) == 0:
+            total_drives[i].add('sad')
+    rates = [round(total_end_posn[0]/len(total_drives[0]), 2), round(total_end_posn[1]/len(total_drives[1]), 2)]
+    return rates
+
+def get_three_and_outs(plays, winner, loser):
+    three_and_out_drives = [set(), set()]
+    total_drives = [set(), set()]
+    for play in plays:
+        if play['drive'] not in total_drives[0] and play['drive'] not in total_drives[1]:
+            if play['defense'] == winner:
+                total_drives[0].add(play['drive'])
+            else:
+                total_drives[1].add(play['drive'])
+            if play['drive_end_play_number'] == 4 and play['drive_end_event'] == "PUNT":
+                if play['defense'] == winner:
+                    three_and_out_drives[0].add(play['drive'])
+                else:
+                    three_and_out_drives[1].add(play['drive'])
+
+    return [len(three_and_out_drives[0]), len(three_and_out_drives[1])]
 
 mainloop()
