@@ -101,7 +101,7 @@ def route_level_data (games, params):
                    play['pass_pattern']]
             players = play['pass_pattern'].split('; ')
             for player in players:
-                player_part += process_player(player)
+                player_part = process_player(player)
                 sl_l = False
                 sl_r = False
                 blb_l = False
