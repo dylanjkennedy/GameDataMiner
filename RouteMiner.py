@@ -57,13 +57,13 @@ def get_teams (names, params):
 # Pull all games that a list of opponents played in
 # str, {str: str} -> listof str
 def get_games (opponents, params):
-    r = requests.get('https://api.profootballfocus.com/v1/video/ncaa/games', headers = params)
+    r = requests.get('https://api.profootballfocus.com/v1/video/nfl/games', headers = params)
 
     games = []
     for game in r.json()['games']:
-        if game['away_team'] in opponents or game['home_team'] in opponents:
-            if game['season'] >= 2019: # TODO let this be a param tweaked in mainloop
-                games.append(str(game['id']))
+        #if game['away_team'] in opponents or game['home_team'] in opponents:
+        if game['season'] >= 2019: # TODO let this be a param tweaked in mainloop
+            games.append(str(game['id']))
     return games
 
 # For a list of games, return routes from those games and reformat
@@ -85,13 +85,13 @@ def route_level_data (games, params):
     counter = 0
     for game in games:
         print(game) # Helps track progress
-        r = requests.get('https://api.profootballfocus.com/v1/video/ncaa/games/'+game+'/plays', headers = params)
+        r = requests.get('https://api.profootballfocus.com/v1/video/nfl/games/'+game+'/plays', headers = params)
         plays = r.json()['plays']
         for play in plays:
             if play['pass_pattern'] is None:
                 continue
-            if play['offense'] != 'MABC': # TODO This shouldn't be hardcoded here 
-                continue
+            #if play['offense'] != 'MABC': # TODO This shouldn't be hardcoded here 
+                #continue
             counter += 1
             row = [play['play_id'],
                    counter,
@@ -101,8 +101,24 @@ def route_level_data (games, params):
                    play['pass_pattern']]
             players = play['pass_pattern'].split('; ')
             for player in players:
-                row += process_player(player)
-            results += [row]
+                player_part += process_player(player)
+                sl_l = False
+                sl_r = False
+                blb_l = False
+                blb_r = False
+                if player_part[2] == "L":
+                    if player_part[3] == ["SLANT"]:
+                        sl_l = True
+                    if player_part[3] == ["Behind LB"]:
+                        blb_l = True
+                if player_part[2] == "R":
+                    if player_part[3] == ["SLANT"]:
+                        sl_r = True
+                    if player_part[3] == ["Behind LB"]:
+                        blb_r = True
+            if ((sl_l and blb_l) or (sl_r and blb_r)):
+                print(play['play_id'])
+                results += [row]
     return results
 
 # Reformat
