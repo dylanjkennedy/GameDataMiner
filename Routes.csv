@@ -1,0 +1,34 @@
+Play Id,#,Formation Group,Motion,Pass Reciever Position Target,pass_pattern,Position - 1,Side - 1,Route Conversion - 1,Depth - 1,Position - 2,Side - 2,Route Conversion - 2,Depth - 2,Position - 3,Side - 3,Route Conversion - 3,Depth - 3,Position - 4,Side - 4,Route Conversion - 4,Depth - 4,Position - 5,Side - 5,Route Conversion - 5,Depth - 5
+2983657,1771,2x2,SF 89* (R:Lx),SRWR,LWR 7i(12); TE-L k1; HB fr; SRWR xl(8); RWR 2(1)
+2973088,2517,2x2,TB 14* (R:L{R}),HB-L,LWR xl(6); TE-L c2(1); HB-L frh21(-1); SRWR x6(3); RWR 3(6)
+2974238,2789,1x3,GB 81* (L:Rx),,LWR 4i(10); HB-L kl; SRiWR 2(4); SRoWR xl(6); RWR 3o(15)
+2974603,2815,2x2,,SLWR,LWR 4(2); SLWR 3(4); HB-R kl; SRWR xl(9); RWR 2(5)
+2981605,2982,1x3,DET 88* (R:L{R}),,LWR 99; HB-L h4(-1); SRiWR cxd(0)/; SRoWR xl(6); RWR 2(1)
+2968303,5478,3x2,DEN 33* (B:R),RWR,LWR 2(1); SLWR 6o(8); TE-L xl(6); SRWR 3(7); RWR 9o
+3365783,6237,1x3,NO 87* (R:L{R}),SRiWR,LWR 4i(10); HB-L h3(-3); SRiWR 3(10); SRoWR xl(6)/; RWR 2(3)
+3199849,9748,3x2,GB 81* (R:L{L}),SLiWR,LWR 4(6); SLoWR 2(5); SLiWR xl(10); SRWR 12(4); RWR 9
+3127498,10359,1x2,NYG 85* (L:Rx),TE-oR,TE-L 2(3)/; FB h21(0); HB frkr; TE-iR 2(3); TE-oR xl(7)
+3267938,11273,2x2,CIN 85* (L:Rx),RWR,LWR 2(3); SLWR xl(5); HB-R kr; SRWR 9si; RWR 5o(15)
+3322233,12153,1x4,BLT 89* (L:Rx),SRWR,LWR 6(11); SRiWR 1; SRWR xl(4); SRoWR 2(5); RWR 2(5)
+3363586,12233,1x3,CLV 27* (B:R),SRWR,LWR 4i(11); HB-L kl; TE-R xl(6); SRWR 2(3); RWR 4(8)
+3174373,12337,2x2,WAS 18* (R:Lx),HB-L,LWR 4o(11); SLWR 3(4); HB-L krh4(1); SRWR xl(5); RWR 2(2)
+3371835,12607,1x3,,LWR,LWR 2(4); HB-L kl; SRiWR 2(5); SRoWR 8s(7); RWR xl(7)
+3227103,14721,2x2,,LWR,LWR 2(3); SLWR xl(4); HB-R klh7(0); TE-R 9so; RWR 36(18)
+3384602,17793,2x3,,SRoWR,LWR 9; SLWR 3(5); SRiWR xl(5); SRoWR 2(3); RWR 4(4)
+3107260,17934,2x3,,,LWR 9; SLWR 3(6); SRiWR xl(4); SRoWR 2(4); RWR 4(4)
+3246964,18096,3x1,,LWR,LWR 2(3); SLoWR 3(13); SLiWR xl(7); HB-R krh46(2); RWR 6o(11)
+3149727,18144,3x1,,SLiWR,LWR 2(5); SLoWR 8so(14); SLiWR xl(9); HB-L frh21(0); TE-R 7o(14)
+3226240,18938,1x3,,SRiWR,LWR 3(14); HB-L h31(2); SRiWR xd(5); SRoWR xl(11); RWR 2(0)
+3246628,19181,3x2,MIN 33 (B:R); MIN 82 (R:Lx); MIN 84 (B:L),TE-L,LWR 2(3); SLWR 4(7); TE-L xl(6); SRWR 3(3); RWR 9
+3201989,19925,2x2,LA 18* (R:Lx),RWR,LWR 3(14); SLWR xo(10); HB-L klh3(-7); SRWR xl(4); RWR 2(2)
+3048849,22078,2x2,,TE-R,LWR 2(2); SLWR xl(7); HB fl; TE-R k1; RWR 4(13)
+3075313,22147,3x1,,SLoWR,LWR 9; SLoWR 2(5); SLiWR xl(5); HB-R kr; RWR 7i(16)
+3077329,22190,3x2,,SLoWR,LWR 29(5); SLoWR 2(4); SLiWR xl(6); SRWR 9s; RWR 6o(13)
+3202455,26779,3x1,TEN 10* (R:L{L}),RWR,LWR 2(2); SLoWR xl(4); SLiWR xo(12); HB-R kr; RWR 6o(6)
+3150460,26878,3x2,,SRWR,LWR 2(3); SLoWR 4(10); SLiWR xl(6); SRWR 9s; RWR 9
+2983419,26970,2x2,,,LWR 2(4); SLWR xl(7)/; HB-R h21(-1); SRWR 3(7); RWR 99
+3173395,27629,1x3,JAX 12* (B:R),,LWR 7(8); HB-L h76(0); SRiWR xl(10); SRoWR 2(2); RWR 6(4)
+3102313,28516,1x2,NE 34 (B:L>L:B),LWR,LWR 3i(10); HB-L h5(0); HB-R h46(2); SRWR xl(10); RWR 2(2)
+3102846,28535,2x3,NE 34* (B:R),LWR,LWR 9o; SLWR 3(1); SRiWR xl(9); SRoWR 1; RWR 2(2)
+3103292,28548,3x1,,SLoWR,LWR 2(5); SLoWR 3(4); SLiWR xl(8); HB frkr; TE-R k
+3101784,29409,2x2,CIN 83* (L:Rx),,LWR 2(-1); SLWR xl(4); HB-L klh31(-4); SRWR 26(8); RWR 9o

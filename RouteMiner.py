@@ -11,7 +11,6 @@ def mainloop():
     # It is easier to edit the file directly, but all edits should be done in mainloop.
     # args = sys.argv
 
-    # If this doesn't work, copy and paste key but DO NOT commit the key publcily
     key = os.environ['PFF_API_KEY']
 
     params = get_params(key)
@@ -100,22 +99,24 @@ def route_level_data (games, params):
                    play['pass_receiver_target_position'],
                    play['pass_pattern']]
             players = play['pass_pattern'].split('; ')
+            sl_l = False
+            sl_r = False
+            blb_l = False
+            blb_r = False
             for player in players:
                 player_part = process_player(player)
-                sl_l = False
-                sl_r = False
-                blb_l = False
-                blb_r = False
-                if player_part[2] == "L":
-                    if player_part[3] == ["SLANT"]:
+                #print(player_part)
+                if player_part[1] == "L":
+                    if player_part[2] == "SLANT":
                         sl_l = True
-                    if player_part[3] == ["Behind LB"]:
+                    if player_part[2] == "Behind LB":
                         blb_l = True
-                if player_part[2] == "R":
-                    if player_part[3] == ["SLANT"]:
+                if player_part[1] == "R":
+                    if player_part[2] == "SLANT":
                         sl_r = True
-                    if player_part[3] == ["Behind LB"]:
+                    if player_part[2] == "Behind LB":
                         blb_r = True
+            #print(sl_l, blb_l, sl_r, blb_r)
             if ((sl_l and blb_l) or (sl_r and blb_r)):
                 print(play['play_id'])
                 results += [row]
