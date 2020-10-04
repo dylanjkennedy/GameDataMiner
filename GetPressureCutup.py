@@ -58,9 +58,9 @@ def cutup_pressure(plays):
 	for play in plays:
 		pass_rushers = parse_pass_rush(play)
 		for rusher in pass_rushers:
-			rusher = rusher.split(" ")[1]
-			if rusher not in players:
-				players.append(rusher)
+			rusher = rusher.split(" ")
+			if rusher[1] not in players and rusher[2][1:-1] in positions:
+				players.append(rusher[1])
 	players  = sorted(players)
 	results = []
 	player_play_dict = {}
@@ -122,7 +122,7 @@ def parse_pass_rush(play):
 	return pass_rushers
 
 def save_to_txt(output, team):
-	filename = "{}_presssure_cutup.txt".format(team)
+	filename = "{}_pressure_cutup.txt".format(team)
 	header = ['Player','Game Id', 'Play Id']
 	txt_string = 'Player \t Play Ids\n'
 	for player in output:
