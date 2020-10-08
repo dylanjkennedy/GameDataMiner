@@ -72,6 +72,7 @@ def cutup_pressure(plays):
 				player_play_dict[player].append(play_dict)
 		player_play_dict[player] = sorted(player_play_dict[player], key = lambda x: (x['play_type'], x['game_date']), reverse=True)
 		if len(player_play_dict[player]) > 25:
+			print(player)
 			player_play_dict[player] = player_play_dict[player][:25]
 		player_play_dict[player] = [str(play['play_id']) for play in player_play_dict[player]]
 	return player_play_dict
