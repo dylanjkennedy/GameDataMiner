@@ -14,12 +14,14 @@ def mainloop():
 
     team = sys.argv[1]
 
+    players = sys.argv[2:]
+
     games = get_games(team, params)
 
     plays = get_plays(games, team, params)
 
-    output = cutup_pressure(plays)
-
+    output = cutup_pressure(plays, players)
+    
     save_to_txt(output, team)
 
 # Turn an api key into a jwt key and format as header
@@ -35,7 +37,7 @@ def get_games(team, params):
     r = requests.get('https://api.profootballfocus.com/v1/video/ncaa/games', headers=params)
     games = []
     for game in r.json()['games']:
-        if game['season'] == 2019:
+        if game['season'] == 2020:
             if game['away_team'] == team or game['home_team'] == team:
                 games.append(str(game['id']))
     return games
@@ -50,17 +52,17 @@ def get_plays(games, team, params):
 				plays.append(play)
 	return plays
 
-def cutup_pressure(plays):
-	players = []
+def cutup_pressure(plays, players):
+	# players = []
 	positions = ["LE", "RE", "LEO", "REO", "LOLB", "ROLB", "NLT", "NRT", "DLT", "DRT", "NT"]
 	play_type_map = {"sack": 3, "hit": 2, "hurry": 1}
 
-	for play in plays:
-		pass_rushers = parse_pass_rush(play)
-		for rusher in pass_rushers:
-			rusher = rusher.split(" ")
-			if rusher[1] not in players and rusher[2][1:-1] in positions:
-				players.append(rusher[1])
+	# for play in plays:
+	# 	pass_rushers = parse_pass_rush(play)
+	# 	for rusher in pass_rushers:
+	#  		rusher = rusher.split(" ")
+	#  		if rusher[1] not in players and rusher[2][1:-1] in positions:
+	#  			players.append(rusher[1])
 	players  = sorted(players)
 	results = []
 	player_play_dict = {}

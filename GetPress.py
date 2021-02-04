@@ -1,6 +1,7 @@
 import requests
 import csv
 import sys
+import os
 
 # When given an api-key and an opponent, make a csv
 # of all plays in which a receiver is in press coverage
@@ -9,15 +10,15 @@ import sys
 # string, string -> csv
 def mainloop():
     args = sys.argv
-    key = args[1]
-    opponent = args[2]
+    key = os.environ['PFF_API_KEY']
+    opponent = args[1]
+    players = args[2:]
 
     params = get_params(key)
     games = get_games(opponent, params)
-    output = games_to_plays(games, opponent, params)
+    output = games_to_plays(games, opponent, players, params)
 
-    #save_to_csv(output)
-    save_to_txt(output, opponent + '_press.txt')
+    save_to_txt(output, opponent + '_press_coverage.txt')
 
 # Turn an api key into a jwt key and format as header
 # str -> {str: str}
@@ -36,15 +37,18 @@ def get_games (opponent, params):
     games = []
     for game in r.json()['games']:
         if game['away_team'] == opponent or game['home_team'] == opponent:
-            if game['season'] == 2019:
+            if game['season'] >= 2020 and game['week'] == 14:
                 games.append(str(game['id']))
     return games
 
 # For a list of games, create a dictionary indexed by WR, containing a list of tuples
 # The first element in the tuple is the game id, the next is the play id
 # listof str, str, str -> {str : listof (str,str)}
-def games_to_plays (games, opponent, params):
+def games_to_plays (games, opponent, players, params):
     wr_dict = {}
+    if players != []:
+        for player in players:
+            wr_dict[opponent + " " + player] = []
     for game in games:
         r = requests.get('https://api.profootballfocus.com/v1/video/ncaa/games/'+game+'/plays', headers = params)
         plays = r.json()['plays']
@@ -52,11 +56,12 @@ def games_to_plays (games, opponent, params):
             if 'press_players' in play.keys() and is_valid(play):
                 wrs = get_players_in_press(play['press_players'], opponent)
                 for wr in wrs:
-                    if wr not in wr_dict:
-                        wr_dict[wr] = []
-                    #wr_dict[wr].append((play['game_id'],play['play_id']))
+                    #if wr not in wr_dict:
+                    #    wr_dict[wr] = []
+                    # wr_dict[wr].append((play['game_id'],play['play_id']))
                     # User does not seem to require game ID
-                    wr_dict[wr].append(str(play['play_id']))
+                    if wr in wr_dict and wr == play['pass_receiver_target']:
+                        wr_dict[wr].append(str(play['play_id']))
     return wr_dict
 
 # For a dictionary for a play from pff, return false it if it is
@@ -91,6 +96,9 @@ def get_players_in_press (press_info, opponent):
     if press_info == None:
         return []
     matchups = press_info.split(';')
+    
+    if matchups[0] == "":
+        matchups = matchups[1:]
     
     # We only want the player after the '>' since that indicates they were covered
     # We also want to remove the leading space, so we use [1:]

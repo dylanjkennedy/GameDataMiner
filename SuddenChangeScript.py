@@ -8,13 +8,14 @@ Created on Mon Oct  5 16:35:55 2020
 
 import requests
 import os
+import sys
 
 def mainloop():
     # no arguments - fetch key from os
 
     key = os.environ['PFF_API_KEY']
 
-    team = "MDUN"
+    team = sys.argv[1]
 
     params = get_params(key)
 
@@ -24,6 +25,7 @@ def mainloop():
     
     output = suddenChange(plays)
     print(output)
+    save_to_txt(output, team)
     
 def get_params(key):
     params = {'x-api-key':key}
@@ -36,7 +38,7 @@ def get_games(team, params):
     r = requests.get('https://api.profootballfocus.com/v1/video/ncaa/games', headers=params)
     games = []
     for game in r.json()['games']:
-        if game['season'] == 2019:
+        if game['season'] >= 2020:
             if game['away_team'] == team or game['home_team'] == team:
                 games.append(str(game['id']))
     return games
@@ -53,9 +55,16 @@ def get_plays(games, team, params):
 def suddenChange(plays):
     play_ids = []
     for play in plays:
-        if play['drive_play'] == 1 and play['drive_start_event'] in ['FUMBLE', 'DOWNS', 'INTERCEPTION', 'MISSED FG', 'PUNT - BLOCKED', 'KICKOFF - RECOVERY']:
-            play_ids.append(play['play_id'])
+        if play['drive_play'] == 1 and play['drive_start_event'] in ['FUMBLE', 'DOWNS', 'INTERCEPTION', 'FG - MISSED']:
+            play_ids.append(str(play['play_id']))
     return play_ids
+
+def save_to_txt(output, team):
+    filename = "{}_Sudden_Change.txt".format(team)
+    txt_string = ','.join(output)
+
+    with open(filename, 'w', newline ='') as f:
+        f.write(txt_string)
 
 mainloop()
     

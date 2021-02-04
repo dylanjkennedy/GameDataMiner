@@ -15,7 +15,7 @@ def mainloop():
     games = get_games(teams, params)
     output = game_level_data(games, params)
 
-    with open('game_level_results.csv', 'w', newline ='') as f:
+    with open('2020_game_level_results.csv', 'w', newline ='') as f:
         writer = csv.writer(f)
         writer.writerows(output)
 
@@ -32,7 +32,7 @@ def get_params (key):
 # str, {str: str} -> listof str
 def get_teams (name, params):
     teams = []
-    r = requests.get('https://api.profootballfocus.com/v1/ncaa/2019/teams', headers = params)
+    r = requests.get('https://api.profootballfocus.com/v1/ncaa/2020/teams', headers = params)
     for team in r.json()['teams']:
         for group in team['groups']:
             if group['name'] == name:
@@ -49,14 +49,14 @@ def get_games (opponents, params):
     games = []
     for game in r.json()['games']:
         if game['away_team'] in opponents and game['home_team'] in opponents:
-            if game['season'] == 2019:
+            if game['season'] == 2020 and game['home_team_score']:
                 if game['away_team_score'] > game['home_team_score']:
                     winner = game['away_team']
                     loser = game['home_team']
                 else:
                     loser = game['away_team']
                     winner = game['home_team']
-                games.append([str(game['id']),winner,loser])
+                games.append([str(game['id']),winner,loser,game['week']])
     return games
 
 # For a list of games, return game level data for each
@@ -68,6 +68,7 @@ def game_level_data (games, params):
               'Explosive Plays',
               'Red Zone Eff', 'Tite Zone Eff',
               '3rd Down Eff',
+              '3rd Down Yards to Go',
               'Havoc Rate',
               'Yards After Contact', 'Yards After Catch',
               'Missed Tackles',
@@ -104,7 +105,7 @@ def game_level_data (games, params):
               'Rate of Reaching Red Zone',
               'Average Endpoint on Red Zone Drives',
               '3 and Outs']
-    header = ['Game ID', 'Winner', 'Loser']
+    header = ['Game ID', 'Winner', 'Loser', 'Week']
     for field in fields:
         new_cols = ['Winner ' + field,
                     'Loser ' + field]
@@ -123,6 +124,7 @@ def game_level_data (games, params):
         row += get_zone_ppp(plays, game[1], game[2], 13, 25)
         row += get_zone_ppp(plays, game[1], game[2], 1, 12)
         row += get_third_down_efficiency(plays, game[1], game[2])
+        row += yds_to_go_third_down(plays, game[1], game[2])
         row += get_havoc_rate(plays, game[1], game[2])
         row += sum_yards_after_contact(plays, game[1], game[2])
         row += sum_yards_after_catch(plays, game[1], game[2])
@@ -219,8 +221,8 @@ def get_ypc(plays, winner, loser):
 # count the number of explosive plays
 # listof {str: any}, str, str -> listof 2 num
 def count_explosive_plays(plays, winner, loser):
-    explosive_run = 10
-    explosive_pass = 20
+    explosive_run = 25
+    explosive_pass = 25
     explosive_plays = [0, 0]
     for play in plays:
         if play['run_pass'] == 'R' and play['gain_loss_net'] >= explosive_run:
@@ -717,5 +719,26 @@ def get_three_and_outs(plays, winner, loser):
                     three_and_out_drives[1].add(play['drive'])
 
     return [len(three_and_out_drives[0]), len(three_and_out_drives[1])]
+
+def yds_to_go_third_down(plays, winner, loser):
+    third_down_yds = [0, 0]
+    third_downs = [0, 0]
+    for play in plays:
+        if play['down'] == 3:
+            if play['defense'] == winner:
+                third_down_yds[0] += play['distance']
+                third_downs[0] += 1
+            else:
+                third_down_yds[1] += play['distance']
+                third_downs[1] += 1
+    return list(map(lambda x, y: round(x / y, 2), third_down_yds, third_downs))
+
+'''
+def get_drives(plays, winner, loser):
+    winner_o_drives = []
+    loser_o_drives = []
+    for play in plays:
+
+'''
 
 mainloop()
